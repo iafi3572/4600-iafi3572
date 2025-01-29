@@ -1,0 +1,6 @@
+1. The method succeeds for the first and 3rd interval. It was not succsesful for the second one because f is negative for x<1. 
+This means the method doesn't try because it is not sure there is a root in the interval. This makes it not possible for 
+bisection to find the root at x =0.
+2.My code did have behavior that I expected, however, for 2b it failed to find the root. For all others it found it with the
+desired accuracy.
+3.
