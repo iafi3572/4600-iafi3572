@@ -18,7 +18,7 @@ print(partd())
 
 def parte():
     x = 9.999999995000000 * 10 **(-10)
-    f = lambda x :np.e**x -1
+    f = 10**-9
     aprx = lambda x: x+x**2/2
-    return abs( f(x) - aprx(x) )
+    return abs( f - aprx(x) )
 print(parte())
