@@ -51,7 +51,7 @@ def modnewton(f,fp,fpp,x0,tol,Nmax):
 
 def driver():
     x0 = 4
-    tol = 10**-5
+    tol = 10**-4
     Nmax = 200
     m = 2
     f = lambda x : np.exp(3*x) + 27*(-x**6+ x**4*np.exp(x)) - 9 * x**2 * np.exp(2*x)
@@ -60,14 +60,22 @@ def driver():
     [x1,xstar1,info1,i1] = newtons(f,fp,x0,tol,Nmax)
     [x2,xstar2,info2,i2] = newton2c(f,fp,x0,tol,Nmax,m)
     [x3,xstar3,info3,i3] = modnewton(f,fp,fpp,x0,tol,Nmax)
-    b= max(i1,i2,i3)
     plt.xscale("log")
     plt.yscale("log")
-    plt.plot(x1[0:b-1]-xstar1, x1[1:b]-xstar1)
-    plt.plot(x2[0:b-1]-xstar2, x2[1:b]-xstar2)
-    plt.plot(x3[0:b-1]-xstar3, x3[1:b]-xstar3)
-    print(linregress(x1[0:b-1]-xstar1, x1[1:b]-xstar1))
-    print(linregress(x2[0:b-1]-xstar2, x2[1:b]-xstar2))
-    print(linregress(x3[0:b-1]-xstar3, x3[1:b]-xstar3))
+    plt.plot(abs(x1[0:i1-1]-xstar1), abs(x1[1:i1]-xstar1))
+    plt.plot(abs(x2[0:i2-1]-xstar2), abs(x2[1:i2]-xstar2))
+    plt.plot(abs(x3[0:i3-1]-xstar3), abs(x3[1:i3]-xstar3))
+    print("Newton:")
+    print("\tRoot:", xstar1) 
+    print("\tSuccsess:","Yes" if info1 ==0 else "No")
+    print("\tOrder:",linregress(np.log(abs(x1[0:i1-1]-xstar1)), np.log(abs(x1[1:i1]-xstar1)))[0])
+    print("Problem 2c")
+    print("\tRoot:", xstar2) 
+    print("\tSuccsess:","Yes" if info2 ==0 else "No")
+    print("\tOrder:",linregress(np.log(abs(x2[0:i2-1]-xstar2)), np.log(abs(x2[1:i2]-xstar2)))[0])
+    print("Class")
+    print("\tRoot:", xstar3) 
+    print("\tSuccsess:", "Yes"if info3 ==0 else "No")
+    print("\tClass Order:",linregress(np.log(abs(x3[0:i3-1]-xstar3)), np.log(abs(x3[1:i3]-xstar3)))[0])
     plt.savefig("plot4.png")
 driver()
