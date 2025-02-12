@@ -66,6 +66,7 @@ def driver():
     plt.plot(abs(x2[0:i2-1]-xstar2), abs(x2[1:i2]-xstar2), label = "2c")
     plt.plot(abs(x3[0:i3-1]-xstar3), abs(x3[1:i3]-xstar3),label = "Class")
     plt.legend()
+    
     print("Newton:")
     print("\tRoot:", xstar1) 
     print("\tSuccsess:","Yes" if info1 ==0 else "No")
