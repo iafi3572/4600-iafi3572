@@ -1,9 +1,8 @@
 import numpy as np
-import pandas as pd
-from pandas import DataFrame as df
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 
-def newton(f,fp,x0,tol,Nmax):
+def newtons(f,fp,x0,tol,Nmax):
     x = np.zeros(Nmax+1)
     x[0] = x0
     for i in range(Nmax):
@@ -18,48 +17,57 @@ def newton(f,fp,x0,tol,Nmax):
     info = 1
     return [x,xstar,info,i]
 
-def secant(f,x0,x1,Nmax,tol):
-    n=0
+def newton2c(f,fp,x0,tol,Nmax,m):
     x = np.zeros(Nmax+1)
-    while(n<Nmax and abs(x1-x0) >=tol):
-        m = (f(x1)-f(x0))/(x1-x0)
-        x0=x1
-        x[n] = x1
-        x1 = x1 - f(x1)/m
-        n = n+1
-    r= x1
-    return [x,r,n]
+    x[0] = x0
+    for i in range(Nmax):
+        x1 = x0 - m*f(x0)/fp(x0)
+        x[i+1] = x1
+        if(abs(x1-x0) < tol):
+            xstar = x1
+            info = 0
+            return [x,xstar,info,i]
+        x0 =x1
+    xstar = x1
+    info = 1
+    return [x,xstar,info,i]
 
+def modnewton(f,fp,fpp,x0,tol,Nmax):
+    newf = lambda x: f(x)/fp(x)
+    newfp = lambda x: ((fp(x)*fp(x)) - (f(x)*fpp(x)))/(fp(x)**2)
+    x = np.zeros(Nmax+1)
+    x[0] = x0
+    for i in range(Nmax):
+        x1 = x0 - newf(x0)/newfp(x0)
+        x[i+1] = x1
+        if(abs(x1-x0) < tol):
+            xstar = x1
+            info = 0
+            return [x,xstar,info,i]
+        x0 =x1
+    xstar = x1
+    info = 1
+    return [x,xstar,info,i]
 
 def driver():
-    nmax = 200
-    tol = 10 ** -5
-    f = lambda x: x**6 -x -1
-    fp = lambda x: 6*x**5 -1
-
-    [x1,xstar,info,i] = newton(f,fp,2,tol,nmax)
-    [x2,r,n] = secant(f,2,1,nmax,tol)
-
-    b = max(n,i)
-    step = np.arange(0,b,1)
-    er1 = abs(x1[0:b]-xstar)
-    er2 = abs(x2[0:b]-r)
-    d = df({'Step' : step, 'Newton Error': er1,
-            'Secant Error': er2})
-    d.to_csv('table.txt', sep = '\t', index = False)
-
-    er1 = abs(x1[0:b-1]-xstar)
-    er1a = abs(x1[1:b]-xstar)
-    er2 = abs(x2[0:b-1]-r)
-    er2a = abs(x2[1:b]-r)
-    plt.plot(er1,er1a,label= "Newton")
-    plt.plot(er2,er2a,label= "Secant")
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.legend()
-    plt.savefig("plot.png")
-
+    x0 = 4
+    tol = 10**-5
+    Nmax = 200
+    m = 2
+    f = lambda x : np.exp(3*x) + 27*(-x**6+ x**4*np.exp(x)) - 9 * x**2 * np.exp(2*x)
+    fp= lambda x : 3*np.exp(3*x) - (162 * x**5) + (108 * x**3 * np.exp(x)) + (27*np.exp(x)* x **4) - (18*x*np.exp(2*x)) - (18 * x**2*np.exp(2*x))
+    fpp = lambda x: 9 * np.exp(3*x) - 810 * x**4 + (324 * x**2 * np.exp(x)) + (216* x**3 *np.exp(x)) + (27*np.exp(x)*x**4) -18*np.exp(2*x) - (72 * x * np.exp(2*x)) - (36*x**2 *np.exp(2*x))
+    [x1,xstar1,info1,i1] = newtons(f,fp,x0,tol,Nmax)
+    [x2,xstar2,info2,i2] = newton2c(f,fp,x0,tol,Nmax,m)
+    [x3,xstar3,info3,i3] = modnewton(f,fp,fpp,x0,tol,Nmax)
+    b= max(i1,i2,i3)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.plot(x1[0:b-1]-xstar1, x1[1:b]-xstar1)
+    plt.plot(x2[0:b-1]-xstar2, x2[1:b]-xstar2)
+    plt.plot(x3[0:b-1]-xstar3, x3[1:b]-xstar3)
+    print(linregress(x1[0:b-1]-xstar1, x1[1:b]-xstar1))
+    print(linregress(x2[0:b-1]-xstar2, x2[1:b]-xstar2))
+    print(linregress(x3[0:b-1]-xstar3, x3[1:b]-xstar3))
+    plt.savefig("plot4.png")
 driver()
-
-
-        
