@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame as df
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 
 def newton(f,fp,x0,tol,Nmax):
     x = np.zeros(Nmax+1)
@@ -54,6 +55,8 @@ def driver():
     er2a = abs(x2[1:b]-r)
     plt.plot(er1,er1a,label= "Newton")
     plt.plot(er2,er2a,label= "Secant")
+    print("Newtons:",linregress(np.log(er1), np.log(er1a))[0])
+    print("Secant:" ,linregress(np.log(er2), np.log(er2a))[0])
     plt.yscale('log')
     plt.xscale('log')
     plt.legend()

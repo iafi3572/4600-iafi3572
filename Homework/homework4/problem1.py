@@ -71,6 +71,7 @@ def driver():
     x = np.linspace(0,xend)
    
     plt.plot(x,f(x))
+    plt.ylabel("f(x)")
     plt.savefig("plot1.png")
     dBi = bisection(f,0,xend,tol)[0]
     [_,dNe1,info1,_] = newton(f,fp,.01,tol,200)
