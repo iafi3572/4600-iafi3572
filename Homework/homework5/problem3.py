@@ -57,7 +57,4 @@ def driver():
     plt.plot(enn**2,ennp1)
     slope = sc.stats.linregress(np.log(enn),np.log(ennp1)).slope
     print(slope)
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.savefig("plot3.png")
 driver()
