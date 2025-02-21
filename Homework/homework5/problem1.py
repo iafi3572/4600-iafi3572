@@ -27,7 +27,7 @@ def fixed(G,x0,tol,nmax):
     return (r,rn,n)
 
 def evalJ(x):
-    J = np.array([[6*x[0],2*x[1]],[3*x[1]**2-3*x[0]**2, 6*x[0]*x[1]]])
+    J = np.array([[6*x[0],-2*x[1]],[3*x[1]**2-3*x[0]**2, 6*x[0]*x[1]]])
     return J
 
 def evalF(x0):
@@ -58,9 +58,9 @@ def driver():
     [r,rn,n] = fixed(evalF,x0,tol,100)
     [xstar,ier,its] = Newton(x0,tol,10000)
     print("FPT")
-    print("\tSolution:",r)
+    print("\tSolution: [x,y] =",r)
     print("\tIterations",n)
     print("Newton")
-    print("\tSolution:",xstar)
+    print("\tSolution: [x,y] =",xstar)
     print("\tIterations:",its)
 driver()

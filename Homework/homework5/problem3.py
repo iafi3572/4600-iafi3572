@@ -31,7 +31,7 @@ def fpartial(x):
     p = np.zeros(3)
     p[0] = 2*x[0] 
     p[1] = 8*x[1]
-    p[0] = 8*x[2]
+    p[2] = 8*x[2]
     return p
 
 def f(x):
