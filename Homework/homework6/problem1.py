@@ -12,16 +12,17 @@ def driver():
         return np.array([[2*x[0],2*x[1]],[math.exp(x[0]), 1] ])
     x0 = np.array([[1,1],[1,-1],[0,0]])
    
-    Bmat='fwd'
+    Bmat='inv'
     tol = 10**-3
     for i in range(3):
         #Lazy newton
         nmax=50
         (rLN,rnLN,nfLN,nJLN) = lazy_newton_method_nd(F,JF,x0[i],tol,nmax,True)
-        
+        (r,rn,nf,nJ) = newton_method_nd(F,JF,x0[i],tol,nmax,True)
         #Broyden Method
         
-        B0 = JF(x0[i])
+       # B0 = JF(x0[i])
+        B0 = np.eye(2)
         nmax=100
         (rB,rnB,nfB) = broyden_method_nd(F,B0,x0[i],tol,nmax,Bmat,True)
     
@@ -174,4 +175,51 @@ def broyden_method_nd(f,B0,x0,tol,nmax,Bmat='Id',verb=False):
 
     return(r,rn,nf)
 
+def newton_method_nd(f,Jf,x0,tol,nmax,verb=False):
+
+    # Initialize arrays and function value
+    xn = x0; #initial guess
+    rn = x0; #list of iterates
+    Fn = f(xn); #function value vector
+    n=0;
+    nf=1; nJ=0; #function and Jacobian evals
+    npn=1;
+
+    if (len(x0)<100):
+        if (np.linalg.cond(Jf(x0)) > 1e16):
+            print("Error: matrix too close to singular");
+            print("Newton method failed to converge, n=%d, |F(xn)|=%1.1e\n" % (nmax,np.linalg.norm(Fn)));
+            r=x0;
+            return (r,rn,nf,nJ);
+
+    if verb:
+        print("|--n--|----xn----|---|f(xn)|---|");
+
+    while npn>tol and n<=nmax:
+        # compute n x n Jacobian matrix
+        Jn = Jf(xn);
+        nJ+=1;
+
+        if verb:
+            print("|--%d--|%1.7f|%1.15f|" %(n,np.linalg.norm(xn),np.linalg.norm(Fn)));
+
+        # Newton step (we could check whether Jn is close to singular here)
+        pn = -np.linalg.solve(Jn,Fn);
+        xn = xn + pn;
+        npn = np.linalg.norm(pn); #size of Newton step
+
+        n+=1;
+        rn = np.vstack((rn,xn));
+        Fn = f(xn);
+        nf+=1;
+
+    r=xn;
+
+    if verb:
+        if np.linalg.norm(Fn)>tol:
+            print("Newton method failed to converge, n=%d, |F(xn)|=%1.1e\n" % (nmax,np.linalg.norm(Fn)));
+        else:
+            print("Newton method converged, n=%d, |F(xn)|=%1.1e\n" % (n,np.linalg.norm(Fn)));
+
+    return (r,rn,nf,nJ);
 driver()

@@ -37,10 +37,12 @@ def driver():
     #First, we define F(x) and its Jacobian.
 
      #Apply Newton Method:
-    x0 = np.array([-1,1,3]); tol=1e-14; nmax=100;
-    (rN,rnN,nfN,nJN) = newton_method_nd(F,JF,x0,tol,nmax,True);
+    x0 = np.array([-1,0,2]); tol=1e-6; nmax=100;
+    (rN,rnN,nfN,nJN,a) = newton_method_nd(F,JF,x0,tol,nmax,True);
     print(rN)
     [x,g1,ier,its] = SteepestDescent(x0,tol,nmax)
+    print(its)
+    [orrN,rnN,nfN,nJN,its] = both(F,JF,x0,5*10**-2,nmax,tol);
     print(its)
 ################################################################################
 # Newton method in n dimensions implementation
@@ -59,7 +61,7 @@ def newton_method_nd(f,Jf,x0,tol,nmax,verb=False):
             print("Error: matrix too close to singular");
             print("Newton method failed to converge, n=%d, |F(xn)|=%1.1e\n" % (nmax,np.linalg.norm(Fn)));
             r=x0;
-            return (r,rn,nf,nJ);
+            return (r,rn,nf,nJ,n);
 
     if verb:
         print("|--n--|----xn----|---|f(xn)|---|");
@@ -90,7 +92,7 @@ def newton_method_nd(f,Jf,x0,tol,nmax,verb=False):
         else:
             print("Newton method converged, n=%d, |F(xn)|=%1.1e\n" % (n,np.linalg.norm(Fn)));
 
-    return (r,rn,nf,nJ);
+    return (r,rn,nf,nJ,n);
 
 def SteepestDescent(x,tol,Nmax):
     
@@ -147,5 +149,9 @@ def SteepestDescent(x,tol,Nmax):
     ier = 1        
     return [x,g1,ier,its]
 
+def both(f,Jf,x0,tol,nmax,tol2):
+    [x,g1,ier,its] = SteepestDescent(x0,tol,nmax)
+    [rN,rnN,nfN,nJN,n] = newton_method_nd(F,JF,x,tol2,nmax,False);
+    return (rN,rnN,nfN,nJN,n+its)
 # Execute driver
 driver()
