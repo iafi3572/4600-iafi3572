@@ -38,10 +38,11 @@ def driver():
     coef3 = V3inv @ y3int
 
     x = np.linspace(a,b,1001)
-    p = evalP(x,xint,f)
+    p = evalP(x,xint,yint)
     yeval = eval_monomial(x,coef,N)
     y3eval = eval_monomial(x,coef3,N)
     plt.figure()
+    plt.ylim(-20,50)
     plt.plot(xint,yint,'o')
     plt.plot(x,f(x), label = "f(x)")
     plt.plot(x,yeval,label = "Interpolation")
@@ -56,6 +57,7 @@ def driver():
     plt.savefig("problem3.png")
 
     plt.figure()
+    plt.ylim(-20,45)
     plt.plot(xint,yint,'o')
     plt.plot(x,f(x), label = "f(x)")
     plt.plot(x,p,label = "Interpolation")
@@ -78,19 +80,23 @@ def Vandermonde(xint, N):
             V[j][i] = xint[j]**i
     return V     
 
-def evalP(x,xint,yint):
-    phi =1
+def evalP(x, xint, yint):
+    phi = np.ones_like(x)
     for i in range(xint.size):
-        phi *= (x-xint[i])
+        phi *= (x - xint[i])
 
-    sum =0
+    sum = np.zeros_like(x)
     for j in range(xint.size):
         w = 1
         for i in range(xint.size):
-            if(i!= j):
-                w *= 1/ (xint[j] - xint[i])
-        sum += (w* yint ) /(x-xint[j])
+            if i != j:
+                w *= 1 / (xint[j] - xint[i])
+        
+        numerator = np.where(x == xint[j], yint[j], w * yint[j])
+        denominator = np.where(x == xint[j], 1, x - xint[j])
+        sum += numerator / denominator
 
     return phi * sum
+
 
 driver()    
