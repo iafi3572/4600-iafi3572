@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.linalg import inv
@@ -33,12 +32,16 @@ def driver(N,verb1 =True, verb2 = True):
     xeval = np.linspace(a,b,Neval+1)
     (M,C,D) = create_natural_spline(yint,xint,N)
     (M1,C1,D1) = create_natural_spline(yint1,xint1,N)
+    (Ma,Ca,Da) = create_clamped_spline(yint,xint,N)
+    (Ma1,Ca1,Da1) = create_clamped_spline(yint1,xint1,N)
     yevalL = np.zeros(Neval+1)
     yevalH = np.zeros(Neval+1)
     yevalC = eval_cubic_spline(xeval,Neval,xint,N,M,C,D)
+    yevalD = eval_cubic_spline(xeval,Neval,xint,N,Ma,Ca,Da)
     yevalL1 = np.zeros(Neval+1)
     yevalH1 = np.zeros(Neval+1)
     yevalC1 = eval_cubic_spline(xeval,Neval,xint1,N,M1,C1,D1)
+    yevalD1 = eval_cubic_spline(xeval,Neval,xint1,N,Ma1,Ca1,Da1)
     for kk in range(Neval+1):
       yevalL[kk] = eval_lagrange(xeval[kk],xint,yint,N)
       yevalH[kk] = eval_hermite(xeval[kk],xint,yint,ypint,N)
@@ -55,7 +58,8 @@ def driver(N,verb1 =True, verb2 = True):
         plt.plot(xeval,fex,label = "f(x)")
         plt.plot(xeval,yevalL,label='Lagrange') 
         plt.plot(xeval,yevalH,label='Hermite')
-        plt.plot(xeval,yevalC,label='Natural spline') 
+        plt.plot(xeval,yevalC,label='Natural Spline') 
+        plt.plot(xeval,yevalD,label='Clamped Spline') 
         plt.legend()
         plt.semilogy()
         plt.savefig("problem1.{N}.png".format(N=N))
@@ -64,7 +68,8 @@ def driver(N,verb1 =True, verb2 = True):
         plt.plot(xeval,fex,label = "f(x)")
         plt.plot(xeval,yevalL1,label='Lagrange') 
         plt.plot(xeval,yevalH1,label='Hermite')
-        plt.plot(xeval,yevalC1,label='Natural spline') 
+        plt.plot(xeval,yevalC1,label='Natural Spline') 
+        plt.plot(xeval,yevalD1,label='Clamped Spline')  #THIS BROKE
         plt.legend()
         plt.semilogy()
         plt.savefig("problem2.{N}.png".format(N=N))
@@ -234,10 +239,10 @@ def  eval_cubic_spline(xeval,Neval,xint,Nint,M,C,D):
 
     return(yeval)
            
-driver(5,True,True)  
-driver(10,False)
-driver(15,False)
-driver(20,False)             
+driver(5)  
+driver(10)
+driver(15)
+driver(20)             
 
    
    
