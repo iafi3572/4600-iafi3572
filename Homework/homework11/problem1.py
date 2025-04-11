@@ -3,7 +3,7 @@ import numpy as np
 import math
 from numpy.linalg import inv 
 from numpy.linalg import norm
-import scipy as sp
+from scipy import integrate as integral
 
 
 def driver():
@@ -26,18 +26,22 @@ def driver():
 
 # for simpson's n must be even.        
 # n+1 = number of pts.
-    n = 510
+    n = 1291
     I_trap = CompTrap(a,b,n,f)
     print('I_trap= ', I_trap)
     
    # err = abs(I_ex-I_trap)   
     
     #print('absolute error = ', err)    
-    
+    n = 62
     I_simp = CompSimp(a,b,n,f)
 
     print('I_simp= ', I_simp)
     
+    I_quad,err,info = integral.quad(f,a,b,full_output=1,epsabs= 10**(-6))
+    print('I_quad 10^-6= ', I_quad, "neval =",info['neval'])
+    I_quad,err,info = integral.quad(f,a,b,full_output=1,epsabs= 10**(-4))
+    print('I_quad 10^-4= ', I_quad,"neval =",info['neval'])
     #err = abs(I_ex-I_simp)   
     
     #print('absolute error = ', err)    
